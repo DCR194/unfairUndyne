@@ -228,3 +228,33 @@ void wait_for_vsync() {
     }
 }
 
+/*
+void wait_for_vsync() {
+    volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
+    *pixel_ctrl_ptr = 1;
+    int status;
+    while (1) {
+        /*
+        if(spaceinAudioFIFO){
+            putAUDIO in FIFO
+        }
+        */
+        status = *(pixel_ctrl_ptr + 3);
+        if ((status & 1) == 0) {
+            //return;
+            //rudig
+        }
+        
+    }
+}
+
+
+main(){
+    while(1){
+        Display
+        Input 
+        GameLogic
+        wait_for_vsync();// waits for vsync while updating audio
+    }
+}
+*/
