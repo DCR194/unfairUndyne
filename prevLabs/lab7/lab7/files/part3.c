@@ -228,6 +228,9 @@ void wait_for_vsync() {
     }
 }
 
+
+
+
 /*
 void wait_for_vsync() {
     volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
@@ -238,13 +241,13 @@ void wait_for_vsync() {
         if(spaceinAudioFIFO){
             putAUDIO in FIFO
         }
-        */
+
         status = *(pixel_ctrl_ptr + 3);
         if ((status & 1) == 0) {
             //return;
             //rudig
         }
-        
+
     }
 }
 
@@ -252,7 +255,7 @@ void wait_for_vsync() {
 main(){
     while(1){
         Display
-        Input 
+        Input
         GameLogic
         wait_for_vsync();// waits for vsync while updating audio
     }
