@@ -85,7 +85,7 @@ int main(void) {
 
         wait_for_vsync(); // swap front and back buffers on VGA vertical sync
 
-        globalTime += 3;
+        globalTime += (1.0 / 60.0);
         setSevenSegment(ADDR_7SEG1, (int)(globalTime));
 
         //pixel_buffer_start = *(pixel_ctrl_ptr + 1); // new back buffer

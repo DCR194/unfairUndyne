@@ -12,85 +12,38 @@ struct Box {
 
 
 void printBox(struct Box* box);
-void removeBox(struct Box** boxPtr, int* numBoxes, int index);
+void removeBox(struct Box** boxPtr, int index);
 void setBoxValues(struct Box* box, int direction);
 void updatePosition(struct Box* box);
-void addBox(struct Box** boxPtr, int* numBoxes, int direction);
+void addBox(struct Box** boxPtr, int direction);
 int checkHitbox(struct Box* boxPtr, int directionFacing);
+int getSWValue();
+int decodeHex(int value);
+void setSevenSegment(volatile long* segAddress, int value);
+void plot_pixel(int x, int y, short int line_color);
 
+int numBoxes = 0;
+int globalTime = 0;
 
-int main() {
-    int numBoxes = 0;
+int main(){
     struct Box* boxPtr = NULL;
 
-    // Example usage of addBox function to create 3 boxes
-    addBox(&boxPtr, &numBoxes, 0);
-    addBox(&boxPtr, &numBoxes, 0);
-    addBox(&boxPtr, &numBoxes, 0);
-
-    // Set the values of boxPtr[0] to all 0s, boxPtr[1] to all 1s, and boxPtr[2] to all 2s
-    for (int i = 0; i < numBoxes; i++) {
-        struct Box* currentBox = &boxPtr[i];
-        currentBox->xPos = i;
-        currentBox->yPos = i;
-        currentBox->xDir = i;
-        currentBox->yDir = i;
-        currentBox->direction = i;
-    }
-
-    // Print the info of all the boxes
-    printf("Boxes before updates:\n");
-    for (int i = 0; i < numBoxes; i++) {
-        printf("Box %d:\n", i);
-        printBox(&boxPtr[i]);
-    }
-
-    // Update boxPtr[0] once, boxPtr[1] twice, and boxPtr[2] three times
-    // boxPtr[0].xPos += 1;
-    // boxPtr[1].xPos += 2;
-    // boxPtr[1].yPos += 2;
-    // boxPtr[2].xPos += 3;
-    // boxPtr[2].yPos += 3;
-
-    while (checkHitbox(&boxPtr[1], 1) == 0) {
-        updatePosition(&boxPtr[1]);
+    while(1){
 
     }
 
-    printf("Collision outcome %d \n", checkHitbox(&boxPtr[1], 1));
-
-    while (checkHitbox(&boxPtr[2], 1) == 0) {
-        updatePosition(&boxPtr[2]);
-    }
-
-    printf("Collision outcome %d \n", checkHitbox(&boxPtr[2], 1));
-
-    // Print the updated boxes
-    printf("\nBoxes after updates:\n");
-    for (int i = 0; i < numBoxes; i++) {
-        printf("Box %d:\n", i);
-        printBox(&boxPtr[i]);
-    }
-
-    // Remove boxPtr[1]
-    removeBox(&boxPtr, &numBoxes, 1);
-
-    // Print all remaining boxes
-    printf("\nBoxes after removing boxPtr[1]:\n");
-    for (int i = 0; i < numBoxes; i++) {
-        printf("Box %d:\n", i);
-        printBox(&boxPtr[i]);
-    }
-
-    // Delete boxPtr[0] three times
-    removeBox(&boxPtr, &numBoxes, 0);
-    removeBox(&boxPtr, &numBoxes, 0);
-    removeBox(&boxPtr, &numBoxes, 0);
-
-    return 0;
 }
 
 
+void plot_pixel(int x, int y, short int line_color) {
+    volatile short int* one_pixel_address;
+    one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
+    *one_pixel_address = line_color;
+}
+
+void drawBox(struct Box* myBox){
+
+}
 
 void printBox(struct Box* box) {
     printf("xPos: %d, yPos: %d, xDir: %d, yDir: %d \n",
@@ -98,9 +51,9 @@ void printBox(struct Box* box) {
 }
 
 // Function to remove the first box (FIFO)
-void removeBox(struct Box** boxPtr, int* numBoxes, int index) {
+void removeBox(struct Box** boxPtr, int index) {
     // Check if the index is valid
-    if (index < 0 || index >= *numBoxes) {
+    if (index < 0 || index >= numBoxes) {
         printf("Invalid index\n");
         return;
     }
@@ -109,15 +62,15 @@ void removeBox(struct Box** boxPtr, int* numBoxes, int index) {
     // free(&(*boxPtr)[index]);
 
     // Shift the memory to the left to remove the box
-    for (int i = index; i < *numBoxes - 1; i++) {
+    for (int i = index; i < numBoxes - 1; i++) {
         (*boxPtr)[i] = (*boxPtr)[i + 1];
     }
 
     // Reallocate memory to decrease the size of the box array
-    *boxPtr = (struct Box*)realloc(*boxPtr, (*numBoxes - 1) * sizeof(struct Box));
+    *boxPtr = (struct Box*)realloc(*boxPtr, (numBoxes - 1) * sizeof(struct Box));
 
     // Decrement the number of boxes
-    (*numBoxes)--;
+    numBoxes--;
 }
 
 // Function to initialize the attributes of the newest box
@@ -206,9 +159,9 @@ int checkHitbox(struct Box* boxPtr, int directionFacing) {
 }
 
 // Function to add a box
-void addBox(struct Box** boxPtr, int* numBoxes, int direction) {
+void addBox(struct Box** boxPtr, int direction) {
     // Reallocate memory to increase the size of the box array
-    *boxPtr = (struct Box*)realloc(*boxPtr, (*numBoxes + 1) * sizeof(struct Box));
+    *boxPtr = (struct Box*)realloc(*boxPtr, (numBoxes + 1) * sizeof(struct Box));
 
     // Check if memory reallocation was successful
     if (*boxPtr == NULL) {
@@ -217,8 +170,8 @@ void addBox(struct Box** boxPtr, int* numBoxes, int direction) {
     }
 
     // Increment the number of boxes
-    (*numBoxes)++;
+    numBoxes++;
 
     // Call setBoxValues to initialize the attributes of the newest box
-    setBoxValues(&(*boxPtr)[*numBoxes - 1], direction);
+    setBoxValues(&(*boxPtr)[numBoxes - 1], direction);
 }
