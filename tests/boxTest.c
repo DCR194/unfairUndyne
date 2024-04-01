@@ -19,7 +19,7 @@ void printBox(struct Box* box);
 void removeBox(struct Box** boxPtr, int index);
 void setBoxValues(struct Box* box, int direction);
 void updatePosition(struct Box* box);
-void updateAllBoxes(struct Box* box);
+void updateAllBoxes(struct Box** box);
 void addBox(struct Box** boxPtr, int direction);
 int checkHitbox(struct Box* boxPtr, int directionFacing);
 void swap(int* a, int* b);
@@ -31,13 +31,6 @@ int decodeHex(int value);
 void setSevenSegment(volatile long* segAddress, int value);
 
 // DRAWING FUNCTIONS
-void initializeScreen();
-//void draw_line(int x0, int y0, int x1, int y1, short int line_color);
-void plot_pixel(int x, int y, short int line_color);
-void drawAllCubes(struct Box** boxes);
-void drawCube(struct Box* a);
-void wait_for_vsync();
-void clear_screen();
 // void draw_line(int x0, int y0, int x1, int y1, short int line_color);
 
 
@@ -51,80 +44,34 @@ volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
 volatile int pixel_buffer_start;
 
 int main() {
-    *(pixel_ctrl_ptr + 1) = (int)&Buffer1;
-    wait_for_vsync();
-    pixel_buffer_start = *pixel_ctrl_ptr;
-    clear_screen();
-    *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
-    pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-    clear_screen(); // pixel_buffer_start points to the pixel buffer
-
-    wait_for_vsync();
-
-    clear_screen();
-
 
     struct Box* boxPtr = NULL;
-    //addBox(&boxPtr, 0); //add a left arrow; -->
+    addBox(&boxPtr, 0); //add a left arrow; -->
     addBox(&boxPtr, 1); // add a right arrow <--
     //addBox(&boxPtr, 0);
 
-
+    //struct Box* boxPtr = NULL;
+    //addBox(&boxPtr, 0);
 
     while (1) {
-        drawAllCubes(&boxPtr);
-        updateAllBoxes(boxPtr);
-        wait_for_vsync();
-        //clear_screen();
-    }
 
-}
-
-void initializeScreen() {
-    *(pixel_ctrl_ptr + 1) = (int)&Buffer1;
-    wait_for_vsync();
-    pixel_buffer_start = *pixel_ctrl_ptr;
-    clear_screen();
-    *(pixel_ctrl_ptr + 1) = (int)&Buffer2;
-    pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-    clear_screen(); // pixel_buffer_start points to the pixel buffer
-
-    wait_for_vsync();
-
-
-
-    clear_screen();
-
-}
-
-void drawAllCubes(struct Box** boxes) {
-    if (numBoxes <= 0) return;
-    for (int i = 0; i < numBoxes; i++) {
-        drawCube(boxes[i]);
-    }
-}
-
-void drawCube(struct Box* a) {
-    for (int i = a->xPos - SIZECUBES / 2; i < a->xPos + SIZECUBES / 2; i++) {
-        for (int j = a->yPos - SIZECUBES / 2; j < a->yPos + SIZECUBES / 2; j++) {
-            plot_pixel(i, j, 0xF00F);
+        if(numBoxes > 0){
+            printBox(&boxPtr[0]);
         }
+        
+        if(numBoxes == 2){
+            printBox(&boxPtr[1]);
+        }
+        //updatePosition(&boxPtr[1], 0);
+        updateAllBoxes(&boxPtr);
+        printf("%d \n", numBoxes);
+
     }
-}
 
-void plot_pixel(int x, int y, short int line_color) {
-    volatile short int* one_pixel_address;
-    one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
-    *one_pixel_address = line_color;
 }
 
 
-void clear_screen() {
-    int y, x;
-    for (x = 0; x < 320; x++)
-        for (y = 0; y < 240; y++)
-            plot_pixel(x, y, 0);
-}
+
 
 void printBox(struct Box* box) {
     printf("xPos: %d, yPos: %d, xDir: %d, yDir: %d \n",
@@ -133,7 +80,7 @@ void printBox(struct Box* box) {
 
 // Function to remove the first box (FIFO)
 void removeBox(struct Box** boxPtr, int index) {
-    if (numBoxes <= 0) return;
+    if (numBoxes < 0) return;
     // Check if the index is valid
     if (index < 0 || index >= numBoxes) {
         printf("Invalid index\n");
@@ -186,12 +133,12 @@ void setBoxValues(struct Box* box, int direction) {
     // Add other conditions as needed
 }
 
-void updateAllBoxes(struct Box* box) {
+void updateAllBoxes(struct Box** boxes) {
     for (int i = 0; i < numBoxes; i++) {
-        updatePosition(&box[i]);
+        updatePosition(boxes[i]);
 
-        if (checkHitbox(box, (box[i]).direction) != 0) {
-            removeBox(&box, i);
+        if (checkHitbox(boxes[i], (boxes[i])->direction) != 0) {
+            removeBox(boxes, i);
         }
     }
 }
@@ -199,6 +146,7 @@ void updateAllBoxes(struct Box* box) {
 void updatePosition(struct Box* box) {
     box->xPos += box->xDir;
     box->yPos += box->yDir;
+
 }
 
 int checkHitbox(struct Box* boxPtr, int directionFacing) {
