@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/HP/OneDrive/Escritorio/Diego/UofT/4th_Semester/ECE-243_Computer_Organization/project/unfairUndyne/tests",
-      "program": "c:/Users/HP/OneDrive/Escritorio/Diego/UofT/4th_Semester/ECE-243_Computer_Organization/project/unfairUndyne/tests/build/Debug/outDebug",
+      "cwd": ".",
+      "program": "build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
