@@ -1,38 +1,102 @@
+#include <stdlib.h>
 #include <stdio.h>
-#include <stdlib.h> 
-
-
-
 void HEX_PS2(char, char, char);
 
-/*******************************************************************************
-* This program demonstrates use of the PS/2 port by displaying the last three
-* bytes of data received from the PS/2 port on the HEX displays.
-******************************************************************************/
-
-int main(void) {
-	/* Declare volatile pointers to I/O registers (volatile means that IO load
-	and store instructions will be used to access these pointer locations,
-	instead of regular memory loads and stores) */
+int main() {
 	volatile int * PS2_ptr = (int *)0xFF200100;
-	int PS2_data, RVALID;
-	char byte1 = 0, byte2 = 0, byte3 = 0;
-    unsigned int shift_buffer;
-	// PS/2 mouse needs to be reset (must be already plugged in)
-	*(PS2_ptr) = 0xFF; // reset
+	int PS2_data, RVALID, RAVAIL;
+	char key = 0;
+	char press, pressed;
+	int output;
 	while (1) {
-		PS2_data = *(PS2_ptr); // read the Data register in the PS/2 port
-		RVALID = PS2_data & 0x8000; // extract the RVALID field
-		if (RVALID) {
-			/* shift the next data byte into the display */
-			byte1 = byte2;
-			byte2 = byte3;
-			byte3 = PS2_data & 0xFF;
-            shift_buffer = (byte1 << 16) | (byte2 << 8) | byte3;
-			HEX_PS2(byte1, byte2, byte3);
-		}
+		PS2_data = *(PS2_ptr);
+        RVALID = PS2_data & 0x8000; // extract the RVALID field
+        RAVAIL = PS2_data & 0xFFFF0000;
+		
+
+        if (RVALID)
+        {
+            /* save the last three bytes of data */
+			
+			
+            press = key;
+            pressed = ((press&0xFF) == 0xF0)? 1 : 0;
+            key = PS2_data & 0xFF;
+            
+            switch (key) {
+              case 0x6B: //left
+				if (pressed) {
+                	HEX_PS2(0, pressed, key);
+				}
+				else {
+					HEX_PS2(0, pressed, key);
+				}
+                break;
+              case 0x74: //right
+				if (pressed) {
+                	HEX_PS2(0, pressed, key);
+				}
+				else {
+					HEX_PS2(0, pressed, key);
+				}
+                break;
+              case 0x75: //up
+                if (pressed) {
+                	HEX_PS2(0, pressed, key);
+				}
+				else {
+					HEX_PS2(0, pressed, key);
+				}
+                break;
+              case 0x72: //down
+                if (pressed) {
+                	HEX_PS2(0, pressed, key);
+				}
+				else {
+					HEX_PS2(0, pressed, key);
+				}
+                break;
+
+              case 0x1C: //A key
+                if (pressed) {
+                	HEX_PS2(1, pressed, key);
+				}
+				else {
+					HEX_PS2(1, pressed, key);
+				}
+                break;
+              case 0x23: //D key
+                if (pressed) {
+                	HEX_PS2(1, pressed, key);
+				}
+				else {
+					HEX_PS2(1, pressed, key);
+				}
+                break;
+              case 0x1D: //W key
+                if (pressed) {
+                	HEX_PS2(1, pressed, key);
+				}
+				else {
+					HEX_PS2(1, pressed, key);
+				}
+                break;
+              case 0x1B: //S key
+				if (pressed) {
+                	HEX_PS2(1, pressed, key);
+				}
+				else {
+					HEX_PS2(1, pressed, key);
+				}
+                break;
+            }        
+        }
 	}
 }
+
+
+
+
 /****************************************************************************************
 * Subroutine to show a string of HEX data on the HEX displays
 ****************************************************************************************/
