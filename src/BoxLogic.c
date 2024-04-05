@@ -51,14 +51,26 @@ int main() {
         printBox(&boxPtr[i]);
     }
 
+    printf("\nboxPtr[0] before moving to shield\n");
+    printBox(&boxPtr[0]);
+    int iterations = 0;
+    while (checkHitbox(&boxPtr[0], boxPtr[0].direction) == 0) { 
+      updatePosition(&boxPtr[0]);
+      iterations += 1;
+    }
+    printf("\nboxPtr[0] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[0], boxPtr[0].direction), iterations);
+    printBox(&boxPtr[0]);
+
+  
+
     printf("\nboxPtr[1] before moving to shield\n");
     printBox(&boxPtr[1]);
-    int iterations = 0;
-    while (checkHitbox(&boxPtr[1], boxPtr[1].direction) == 0) { 
+    iterations = 0;
+    while (checkHitbox(&boxPtr[1], 0) == 0) { 
       updateAllBoxes(boxPtr, numBoxes);
       iterations += 1;
     }
-    printf("\nboxPtr[1] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[1], 1), iterations);
+    printf("\nboxPtr[1] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[1], 0), iterations);
     printBox(&boxPtr[1]);
 
 
@@ -66,30 +78,36 @@ int main() {
     printf("\nboxPtr[2] before moving to shield\n");
     printBox(&boxPtr[2]);
     iterations = 0;
-    while (checkHitbox(&boxPtr[2], boxPtr[2].direction) == 0) {
+    while (checkHitbox(&boxPtr[2], 0) == 0) {
         updatePosition(&boxPtr[2]);
         iterations += 1;
     }
-    printf("\nboxPtr[2] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[2], 1), iterations);
+    printf("\nboxPtr[2] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[2], 0), iterations);
     printBox(&boxPtr[2]);
 
 
 
     // Remove boxPtr[1]
-    removeBox(&boxPtr, &numBoxes, 1);
 
     // Print all remaining boxes
-    printf("\nBoxes after removing boxPtr[1]:\n");
-    for (int i = 0; i < numBoxes; i++) {
-        printf("Box %d:\n", i);
-        printBox(&boxPtr[i]);
-    }
+    printf("\nBoxes pre remove:\n");
 
-    // Delete boxPtr[0] three times
-    removeBox(&boxPtr, &numBoxes, 0);
+    printBox(&boxPtr[0]);
+    printBox(&boxPtr[1]);
+    printBox(&boxPtr[2]);
+    removeBox(&boxPtr, &numBoxes, 1);
 
+    printf("\nBoxes after removing box[1]:\n");
+    printBox(&boxPtr[0]);
+    printBox(&boxPtr[1]);
+  
     removeBox(&boxPtr, &numBoxes, 0);
+    printf("Removed 0th box\n");
+    printBox(&boxPtr[0]);
+    
+  
     removeBox(&boxPtr, &numBoxes, 0);
+    printf("Remove done\n");
 
     return 0;
 }
