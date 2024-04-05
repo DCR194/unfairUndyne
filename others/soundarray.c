@@ -1,11 +1,3 @@
-#define HIGH          0xFFFFFF
-#define LOW           0x000000
-#define FIFOFREQUENCY 8000
-#define LOWERLIM      100
-#define UPPERLIM      2000
-volatile int* LEDaddress = 0xFF200040;
-volatile int* AudioBase = 0xFF203040;
-
 const int myArray[10759] = {
 	0x46464952, 0x0000a816, 0x45564157, 0x20746d66, 
 	0x00000010, 0x00010001, 0x00001f40, 0x00003e80, 
@@ -2700,31 +2692,3 @@ const int myArray[10759] = {
 };
 
 const int myArray_length = 10759;
-
-
-int getSWValue() {
-    return *LEDaddress;
-}
-
-
-
-void writeToAudio() {
-    int fifoSpace = *(AudioBase + 1) & 0xFF000000;
-    for (int i = 0; i < myArray_length; ) {
-        if ((fifoSpace > 32) || (fifoSpace == 0x80000000)) {
-            *(AudioBase + 2) = myArray[i];
-            *(AudioBase + 3) = myArray[i];
-            
-            *(AudioBase + 2) = myArray[i];
-            *(AudioBase + 3) = myArray[i];
-            i++;
-        }
-        fifoSpace = *(AudioBase + 1) & 0xFF000000;
-    }
-}
-
-int main() {
-    
-        writeToAudio();
-
-}
