@@ -171,9 +171,15 @@ void updateAllBoxes(struct Box* boxPtr) {
     }
 }
 
+
+//STILL DEBUGGING THIS
 void checkAllBoxes(struct Box* boxPtr) {
-    for (int i = numBoxes - 1; i >= 0; i--) {
-        if (checkHitbox(&boxPtr[i]) != 0) {
+    for (int i = numBoxes-1; i >= 0; i) {
+        if (checkHitbox(&boxPtr[i]) == -2) {
+            removeBox(&boxPtr, i);
+            // Add code for taking damage and health lowers
+        }
+        else if (checkHitbox(&boxPtr[i]) == -1) {
             removeBox(&boxPtr, i);
         }
     }
