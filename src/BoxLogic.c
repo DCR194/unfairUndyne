@@ -17,6 +17,7 @@ void setBoxValues(struct Box* box, int direction);
 void updatePosition(struct Box* box);
 void addBox(struct Box** boxPtr, int* numBoxes, int direction);
 int checkHitbox(struct Box* boxPtr, int directionFacing);
+void updateAllBoxes(struct Box* boxPtr, int numBoxes);
 
 int main() {
     int numBoxes = 0;
@@ -27,14 +28,7 @@ int main() {
     addBox(&boxPtr, &numBoxes, 1);
     addBox(&boxPtr, &numBoxes, 2);
 
-    // // Set the values of boxPtr[0] to all 0s, boxPtr[1] to all 1s, and boxPtr[2] to all 2s
-    // for (int i = 0; i < numBoxes; i++) {
-    //     struct Box* currentBox = &boxPtr[i];
-    //     currentBox->xPos = i;
-    //     currentBox->yPos = i;
-    //     currentBox->xDir = i;
-    //     currentBox->yDir = i;
-    // }
+    
 
     // Print the info of all the boxes
     printf("Boxes before updates:\n");
@@ -59,20 +53,24 @@ int main() {
 
     printf("\nboxPtr[1] before moving to shield\n");
     printBox(&boxPtr[1]);
-    while (checkHitbox(&boxPtr[1], 1) == 0) {
-        updatePosition(&boxPtr[1]);
+    int iterations = 0;
+    while (checkHitbox(&boxPtr[1], boxPtr[1].direction) == 0) { 
+      updateAllBoxes(boxPtr, numBoxes);
+      iterations += 1;
     }
-    printf("\nboxPtr[1] after moving to shield %d\n", checkHitbox(&boxPtr[1], 1));
+    printf("\nboxPtr[1] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[1], 1), iterations);
     printBox(&boxPtr[1]);
 
 
 
     printf("\nboxPtr[2] before moving to shield\n");
     printBox(&boxPtr[2]);
-    while (checkHitbox(&boxPtr[2], 1) == 0) {
+    iterations = 0;
+    while (checkHitbox(&boxPtr[2], boxPtr[2].direction) == 0) {
         updatePosition(&boxPtr[2]);
+        iterations += 1;
     }
-    printf("\nboxPtr[2] after moving to shield %d\n", checkHitbox(&boxPtr[2], 1));
+    printf("\nboxPtr[2] after moving to shield %d after %d iterations\n", checkHitbox(&boxPtr[2], 1), iterations);
     printBox(&boxPtr[2]);
 
 
@@ -233,4 +231,10 @@ void addBox(struct Box** boxPtr, int* numBoxes, int direction) {
 
     // Call setBoxValues to initialize the attributes of the newest box
     setBoxValues(&(*boxPtr)[*numBoxes - 1], direction);
+}
+
+void updateAllBoxes(struct Box* boxPtr, int numBoxes) {
+    for (int i = 0; i < numBoxes; i++) {
+        updatePosition(&boxPtr[i]);
+    }
 }
