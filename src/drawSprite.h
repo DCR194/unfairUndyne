@@ -5,6 +5,12 @@
 #include <stdlib.h> 
 
 
+// NEEDS SOME KIND OF INCLUDE FOR THE PLOT PIXEL TO WORK
+
+
+
+
+
 volatile int pixel_buffer_start; // global variable
 
 void plot_pixel(int x, int y, short int line_color); // plots one pixel
@@ -14,18 +20,11 @@ void draw_sprite(int x, int y, int spriteLength, int spriteWidth, short int pixe
 void draw_sprite(int x, int y, int spriteLength, int spriteWidth, short int pixel_color) {
     for (int i = 0; i < spriteLength; i++) {
         for (int j = 0; j < spriteWidth; j++) {
-            plot_pixel(x + i, y + j, pixel_color);
+            // IF WE DO A HEADER FILE FOR DRAWING STUFF INCLUDE IT HERE
+
+            //plot_pixel(x + i, y + j, pixel_color);
         }
     }
-}
-
-
-
-
-void plot_pixel(int x, int y, short int pixel_color) {
-    volatile short int* one_pixel_address;
-    one_pixel_address = pixel_buffer_start + (y << 10) + (x << 1);
-    *one_pixel_address = pixel_color;
 }
 
 #endif
