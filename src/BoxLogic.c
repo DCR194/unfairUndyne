@@ -2,9 +2,13 @@
 #include <stdlib.h> 
 #include "boxLogic.h"
 
+
+// IN BOXLOGIC HEADER FILE THESE VARS ARE DECLARED AS EXTERNAL
 int numBoxes = 0;
 int directionFacing = 0;
 struct Box* boxPtr = NULL;
+
+// FOR THIS TEST I INITIALIZED THEIR VALUES SIMILAR TO HOW WE WOULD IN THE FINAL MAIN FILE
 
 
 int main() {
@@ -81,6 +85,14 @@ int main() {
     printBox(&boxPtr[0]);
     printBox(&boxPtr[1]);
     printBox(&boxPtr[2]);
+
+
+    // REASON THAT BOX 0 IS AT 281 IN THE OUPUT IS BECAUSE IN THE WHILE LOOP FOR 
+    // BOX 1 YOU"LL NOTICE THAT UPDATE ALL IS CALLED WHICH UPDATES BOX 0 PAST THE POINT ITS SUPPOSED TO GO
+    // THATS ALSO WHY IF YOU LOOK AT ITERATIONS YOU SEE THAT BACK 2 HIT THE SHIELD AT 0 ITERATIONS
+    // SINCE THE UPDATE ALL WAS CALLED IN BOX 1 AND MOVED IT TO A HITBOX ZONE
+
+
     removeBox(&boxPtr, 1);
 
     printf("\nBoxes after removing box[1]:\n");

@@ -22,6 +22,7 @@ int checkHitbox(struct Box* boxPtr);
 void updateAllBoxes(struct Box* boxPtr);
 void checkAllBoxes(struct Box* boxPtr);
 
+// EXTERNAL VARIABLES WITH TESTING SHOWN IN BOX LOGIC C FILE
 extern int numBoxes;
 extern int directionFacing;
 extern struct Box* boxPtr;
