@@ -198,6 +198,7 @@ void checkAllBoxes(struct Box* boxPtr) {
     for (int i = numBoxes - 1; i >= 0; i--) {
         if (checkHitbox(&boxPtr[i]) != 0) {
             removeBox(&boxPtr, i);
+            
         }
     }
 }

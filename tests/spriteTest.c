@@ -128,7 +128,7 @@ int main() {
     clear_screen(); // pixel_buffer_start points to the pixel buffer
     // updateAllCubes(myCubes);
     wait_for_vsync();
-
+    bool hit_flag = false;
     while (1) {
 
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
@@ -148,9 +148,11 @@ int main() {
         // WILL FIX CHECK ALL BOXES AND REPLACE THIS PART
         if (checkHitbox(&boxPtr[0], 2) != 0) {
             removeBox(&boxPtr, 0);
+            hit_flag = true;
         }
         if (checkHitbox(&boxPtr[1], 2) != 0) {
             removeBox(&boxPtr, 1);
+            hit_flag = true;
         }
         if (checkHitbox(&boxPtr[2], 2) != 0) {
             removeBox(&boxPtr, 2);
@@ -165,7 +167,13 @@ int main() {
 
         wait_for_vsync();
 
-        
+        if (hit_flag) {
+            hit_flag = false;
+            clear_screen();
+            pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+            wait_for_vsync();
+            clear_screen();
+        }
 
         if (numBoxes == 0) break;
         // printf("\nnumboxes: %d\n", numBoxes);
@@ -347,8 +355,8 @@ void updatePosition(struct Box* box) {
 }
 
 int checkHitbox(struct Box* boxPtr, int directionFacing) {
-    if ((boxPtr->direction == 0) && (boxPtr->xPos > ((XWIDTH / 2) - 5))) { // checking for --->
-        if (boxPtr->xPos > XWIDTH / 2) {
+    if ((boxPtr->direction == 0) && (boxPtr->xPos > ((XWIDTH / 2) - 10))) { // checking for --->
+        if (boxPtr->xPos > (XWIDTH / 2) - 35) {
             return -2;
         }
         else if (boxPtr->direction == directionFacing) {
@@ -358,8 +366,8 @@ int checkHitbox(struct Box* boxPtr, int directionFacing) {
             return 0;
         }
     }
-    if ((boxPtr->direction == 1) && (boxPtr->xPos < ((XWIDTH / 2) + 5))) { // checking for <---
-        if (boxPtr->xPos < XWIDTH / 2) {
+    if ((boxPtr->direction == 1) && (boxPtr->xPos < ((XWIDTH / 2) + 11))) { // checking for <---
+        if (boxPtr->xPos < (XWIDTH / 2) + 35) {
             return -2;
         }
         else if (boxPtr->direction == directionFacing) {

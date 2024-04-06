@@ -6,9 +6,9 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include "backgrounds.h"
 
-
-
+volatile int* SWaddress = 0xFF200040;
 
 
 void plot_pixel(int x, int y, short int line_color); // plots one pixel
@@ -19,11 +19,14 @@ void swap(int* a, int* b);
 int abs(int a);
 void wait_for_vsync();
 
+int getSWValue() {
+    return *SWaddress;
+}
 
 volatile int pixel_buffer_start; // global variable
-short int Buffer1[YHEIGHT][XWIDTH+200]; // 240 rows, 512 (320 + padding) columns
-short int Buffer2[YHEIGHT][XWIDTH+200];
-
+short int Buffer1[YHEIGHT][XWIDTH + 200]; // 240 rows, 512 (320 + padding) columns
+short int Buffer2[YHEIGHT][XWIDTH + 200];
+short int *backGround;
 
 
 int main(void) {
@@ -62,6 +65,11 @@ int main(void) {
     */
 
     while (1) {
+        if (getSWValue() == 1){
+            backGround = easyBG;
+        }else{
+            backGround = hardBG;
+        }
         clear_screen();
         wait_for_vsync();
     }
@@ -84,7 +92,7 @@ void clear_screen() {
     short int color;
     for (x = 0; x < XWIDTH; x++) {
         for (y = 0; y < YHEIGHT; y++) {
-            color = backGround[x + (y*XWIDTH)];
+            color = backGround[x + (y * XWIDTH)];
             plot_pixel(x, y, color);
         }
     }

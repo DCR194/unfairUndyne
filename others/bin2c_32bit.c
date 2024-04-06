@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
   need_comma = 0;
 
   fprintf(f_output, "const int %s[%i] = {", ident, file_size / 4);
-  for (i = 0; i < file_size; i += 4) {
+  for (i = 0; i < file_size; i += 2) {
     if (need_comma)
       fprintf(f_output, ", ");
     else

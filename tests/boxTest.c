@@ -20,8 +20,9 @@ void removeBox(struct Box** boxPtr, int index);
 void setBoxValues(struct Box* box, int direction);
 void updatePosition(struct Box* box);
 void updateAllBoxes(struct Box* box);
+void checkAllBoxes(struct Box* boxPtr);
 void addBox(struct Box** boxPtr, int direction);
-int checkHitbox(struct Box* boxPtr, int directionFacing);
+int checkHitbox(struct Box* boxPtr);
 void swap(int* a, int* b);
 
 
@@ -43,6 +44,7 @@ void clear_screen();
 
 int numBoxes = 0;
 int globalTime = 0;
+int directionFacing = 2;
 
 short int Buffer1[YHEIGHT][XWIDTH + 200]; // 240 rows, 512 (320 + padding) columns
 short int Buffer2[YHEIGHT][XWIDTH + 200];
@@ -83,8 +85,8 @@ int main() {
 
     addBox(&boxPtr, 0); //add a left arrow; -->
     addBox(&boxPtr, 1); // add a right arrow <--
-    addBox(&boxPtr, 2);
-    addBox(&boxPtr, 3);
+    //addBox(&boxPtr, 2);
+    //addBox(&boxPtr, 3);
 
 
     printf("\nnumboxes: %d\n", numBoxes);
@@ -122,24 +124,43 @@ int main() {
 
 
         // WILL FIX CHECK ALL BOXES AND REPLACE THIS PART
-        if (checkHitbox(&boxPtr[0], 2) != 0) {
-            removeBox(&boxPtr, 0);
-        }
-        if (checkHitbox(&boxPtr[1], 2) != 0) {
-            removeBox(&boxPtr, 1);
-        }
-        if (checkHitbox(&boxPtr[2], 2) != 0) {
-            removeBox(&boxPtr, 2);
-            printf("YOU KILLED ME PAPA\n");
-        }
-        if (checkHitbox(&boxPtr[3], 2) != 0) {
-            removeBox(&boxPtr, 3);
-            printf("YOU KILLED ME TOO PAPA\n");
-        }
+        checkAllBoxes(boxPtr);
 
         drawAllCubes(boxPtr);
 
         if (numBoxes == 0) break;
+        // printf("\nnumboxes: %d\n", numBoxes);
+    }
+
+    addBox(&boxPtr, 2);
+    addBox(&boxPtr, 3);
+
+    clear_screen(); // pixel_buffer_start points to the pixel buffer
+    // updateAllCubes(myCubes);
+    wait_for_vsync();
+    wait_for_vsync();
+
+    while (1) {
+
+        if (numBoxes > 0) {
+            printBox(&boxPtr[0]);
+        }
+
+        if (numBoxes == 2) {
+            printBox(&boxPtr[1]);
+        }
+        //updatePosition(&boxPtr[1], 0);
+        updateAllBoxes(boxPtr);
+
+
+        // WILL FIX CHECK ALL BOXES AND REPLACE THIS PART
+        checkAllBoxes(boxPtr);
+
+        drawAllCubes(boxPtr);
+
+        if (numBoxes == 0) break;
+
+        printf("%d\n", numBoxes);
         // printf("\nnumboxes: %d\n", numBoxes);
     }
 
@@ -247,29 +268,27 @@ void updateAllBoxes(struct Box* boxes) {
     }
 }
 
+//STILL DEBUGGING THIS
+void checkAllBoxes(struct Box* boxPtr) {
+    for (int i = numBoxes - 1; i >= 0; i--) {
+        if (checkHitbox(&boxPtr[i]) != 0) {
+            removeBox(&boxPtr, i);
+        }
+    }
+}
+
 void updatePosition(struct Box* box) {
     box->xPos += box->xDir;
     box->yPos += box->yDir;
 
 }
 
-int checkHitbox(struct Box* boxPtr, int directionFacing) {
-    if ((boxPtr->direction == 0) && (boxPtr->xPos > ((XWIDTH / 2) - 5))) { // checking for --->
-        if (boxPtr->xPos > XWIDTH / 2) {
+int checkHitbox(struct Box* boxPtr) {
+    if (boxPtr->direction == 0 && 159 - boxPtr->xPos < 30) { //Left arrow hitboxes
+        if (159 - boxPtr->xPos < 9) {
             return -2;
         }
-        else if (boxPtr->direction == directionFacing) {
-            return -1;
-        }
-        else {
-            return 0;
-        }
-    }
-    if ((boxPtr->direction == 1) && (boxPtr->xPos < ((XWIDTH / 2) + 5))) { // checking for <---
-        if (boxPtr->xPos < XWIDTH / 2) {
-            return -2;
-        }
-        else if (boxPtr->direction == directionFacing) {
+        else if (directionFacing == 0) {
             return -1;
         }
         else {
@@ -277,22 +296,35 @@ int checkHitbox(struct Box* boxPtr, int directionFacing) {
         }
     }
 
-    if ((boxPtr->direction == 2) && (119 - boxPtr->yPos < 30)) { // checking for up arrows
-        if (119 - boxPtr->yPos < 9) {
+    if (boxPtr->direction == 1 && boxPtr->xPos - 159 < 30) { //Right arrow hitboxes
+        if (boxPtr->xPos - 159 < 9) {
             return -2;
         }
-        else if (boxPtr->direction == directionFacing) {
+        else if (directionFacing == 1) {
             return -1;
         }
         else {
             return 0;
         }
     }
-    if ((boxPtr->direction == 3) && (boxPtr->yPos - 119 < 30)) { // checking for down arrows
+
+    if (boxPtr->direction == 2 && 119 - boxPtr->yPos < 30) { //Up arrow hitboxes
+        if (119 - boxPtr->yPos < 9) {
+            return -2;
+        }
+        else if (directionFacing == 2) {
+            return -1;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    if (boxPtr->direction == 3 && boxPtr->yPos - 119 < 30) { //Down arrow hitboxes
         if (boxPtr->yPos - 119 < 9) {
             return -2;
         }
-        else if (boxPtr->direction == directionFacing) {
+        else if (directionFacing == 3) {
             return -1;
         }
         else {
@@ -301,6 +333,9 @@ int checkHitbox(struct Box* boxPtr, int directionFacing) {
     }
 
     return 0;
+
+
+
 }
 
 // Function to add a box
