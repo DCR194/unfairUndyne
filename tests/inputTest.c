@@ -86,16 +86,15 @@ short int Buffer2[YHEIGHT][XWIDTH + 200];
 volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
 volatile int pixel_buffer_start;
 
+bool hit_flag = false;
+
+//  volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
 
 int main() {
     struct Box* boxPtr = NULL;
 
     printf("\nnumboxes: %d\n", numBoxes);
-    //addBox(&boxPtr, 0);
 
-    //struct Box* boxPtr = NULL;
-    //addBox(&boxPtr, 0);
-    volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
 
     *(pixel_ctrl_ptr + 1) = (int)&Buffer1; // first store the address in the  back buffer
     /* now, swap the front/back buffers, to set the front buffer location */
@@ -110,40 +109,33 @@ int main() {
     clear_screen(); // pixel_buffer_start points to the pixel buffer
     // updateAllCubes(myCubes);
     wait_for_vsync();
-    bool hit_flag = false;
     addBox(&boxPtr, 0);
     addBox(&boxPtr, 1);
     while (1) {
 
         pixel_buffer_start = *(pixel_ctrl_ptr + 1);
 
-        // if (numBoxes > 0) {
-        //     printBox(&boxPtr[0]);
-        // }
-
-        // if (numBoxes == 2) {
-        //     printBox(&boxPtr[1]);
-        // }
-
-        //updatePosition(&boxPtr[1], 0);
         eraseAllArrows(boxPtr);
         // updateAllBoxes(boxPtr);
         // checkAllBoxes(boxPtr);
         GameLogic(boxPtr);
-		printBox(&boxPtr[0]);
-        
+        printBox(&boxPtr[0]);
+
 
         drawAllCubes(boxPtr);
 
         wait_for_vsync();
 
+        /*
         if (hit_flag) {
             hit_flag = false;
-            clear_screen();
+            //clear_screen();
             pixel_buffer_start = *(pixel_ctrl_ptr + 1);
             wait_for_vsync();
             clear_screen();
+            //pixel_buffer_start = *(pixel_ctrl_ptr + 1);
         }
+        */
 
         // printf("\nNum: %d\n", numBoxes);
         // printf("\nnumboxes: %d\n", numBoxes);
@@ -183,11 +175,25 @@ void eraseSmartArrow(struct Box* a) {
     }
 }
 
+void eraseCollidedArrow(struct Box* a) {
+    for (int x = 0 - abs(a->xDir); x < ARROWBOXWIDTH - abs(a->xDir); x++) {
+        for (int y = 0 /*- a->yDir*/; y < ARROWBOXWIDTH /*- a->yDir*/; y++) {
+            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
+                //if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
+                plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
+                    a->yPos + y - (ARROWBOXWIDTH / 2),
+                    0x0000);
+                //}
+            }
+        }
+    }
+}
+
 void eraseAllArrows(struct Box* boxes) {
     if (numBoxes <= 0) return;
     for (int i = 0; i < numBoxes; i++) {
         if ((&boxes[i])->direction < 2) {
-            eraseSmartArrow(&boxes[i]);
+            eraseCollidedArrow(&boxes[i]);
         }
 
     }
@@ -412,7 +418,13 @@ void swap(int* a, int* b) {
 void checkAllBoxes(struct Box* boxPtr) {
     for (int i = numBoxes - 1; i >= 0; i--) {
         if (checkHitbox(&boxPtr[i]) != 0) {
+            //updatePosition(&boxPtr[i]);
+            //eraseSmartArrow(&boxPtr[i]);
+            pixel_buffer_start = *(pixel_ctrl_ptr);
+            eraseCollidedArrow(&boxPtr[i]);
+            pixel_buffer_start = *(pixel_ctrl_ptr + 1);
             removeBox(&boxPtr, i);
+            hit_flag = true;
         }
         else {
 
@@ -421,10 +433,10 @@ void checkAllBoxes(struct Box* boxPtr) {
 }
 
 int checkUserInput() {
-	if (coolDown > 0) {
-    	coolDown--;
-	}
-	volatile int * PS2_ptr = (int *)0xFF200100;
+    if (coolDown > 0) {
+        coolDown--;
+    }
+    volatile int* PS2_ptr = (int*)0xFF200100;
     int PS2_data, RVALID, RAVAIL;
     char press, pressed;
     int output;
@@ -437,28 +449,28 @@ int checkUserInput() {
     {
         /* save the last three bytes of data */
         press = key;
-        pressed = ((press&0xFF) == 0xF0)? 1 : 0;
+        pressed = ((press & 0xFF) == 0xF0) ? 1 : 0;
         key = PS2_data & 0xFF;
 
         switch (key) {
-            case LEFT_ARROW: //left
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-            case RIGHT_ARROW: //right
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-            case UP_ARROW: //up
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-            case DOWN_ARROW: //down
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-    
-            case A_KEY: //A key
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-            case D_KEY: //D key
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-            case W_KEY: //W key
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-            case S_KEY: //S key
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
-        }        
+        case LEFT_ARROW: //left
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        case RIGHT_ARROW: //right
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        case UP_ARROW: //up
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        case DOWN_ARROW: //down
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+
+        case A_KEY: //A key
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        case D_KEY: //D key
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        case W_KEY: //W key
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        case S_KEY: //S key
+            return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+        }
     }
     return 0;
 }
@@ -491,7 +503,7 @@ void GameLogic(struct Box* boxPtr) {
             if (direction == DOWN_ARROW)
                 directionFacing = 3;
         }
-        
+
     }
     updateAllBoxes(boxPtr);
     checkAllBoxes(boxPtr);

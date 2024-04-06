@@ -2998,11 +2998,7 @@ void writeToAudio() {
     if ((fifoSpace > 32) || (fifoSpace == 0x80000000)) {
         *(AudioBase + 2) = myArray[globalArrayIdx];
         *(AudioBase + 3) = myArray[globalArrayIdx];
-        
-        *(AudioBase + 2) = myArray[globalArrayIdx];
-        *(AudioBase + 3) = myArray[globalArrayIdx];
-
-        
+            
         globalArrayIdx++;
         if(globalArrayIdx >= myArray_length){
             globalArrayIdx = 0;
