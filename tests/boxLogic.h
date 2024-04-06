@@ -36,39 +36,18 @@ void printBox(struct Box* box) {
 // Function to remove the box at index
 void removeBox(struct Box** boxPtr, int index) {
     // Check if the index is valid
-    if (index < 0 || index >= numBoxes || numBoxes == 0) {
+    if (index < 0 || index >= numBoxes) {
         printf("Invalid index\n");
         return;
     }
 
-    if (numBoxes == 1) {
-        free(*boxPtr);
-        printf("E");
-        *boxPtr = NULL;
-        numBoxes = 0;
-        return;
+    // Shift the memory to the left to remove the box
+    for (int i = index; i < numBoxes - 1; i++) {
+        (*boxPtr)[i] = (*boxPtr)[i + 1];
     }
 
-    // Allocate memory for the new list one element smaller
-    struct Box* newBoxPtr = (struct Box*)malloc((numBoxes - 1) * sizeof(struct Box));
-    if (newBoxPtr == NULL) {
-        printf("Memory allocation failed\n");
-        return;
-    }
-
-    // Copy boxes from the original list to the new list, excluding the removed box
-    int j = 0;
-    for (int i = 0; i < numBoxes; i++) {
-        if (i != index) {
-            newBoxPtr[j++] = (*boxPtr)[i];
-        }
-    }
-
-    // Free the original list
-    free(*boxPtr);
-
-    // Update the boxPtr to point to the new list
-    **boxPtr = *newBoxPtr;
+    // Reallocate memory to decrease the size of the box array
+    *boxPtr = (struct Box*)realloc(*boxPtr, (numBoxes - 1) * sizeof(struct Box));
 
     // Decrement the number of boxes
     numBoxes--;
@@ -193,39 +172,16 @@ void updateAllBoxes(struct Box* boxPtr) {
 }
 
 
-//STILL DEBUGGING THIS
 void checkAllBoxes(struct Box* boxPtr) {
     for (int i = numBoxes - 1; i >= 0; i--) {
         if (checkHitbox(&boxPtr[i]) != 0) {
             removeBox(&boxPtr, i);
             
         }
+        else {
+
+        }
     }
 }
-
-// void checkAllBoxes(struct Box* boxPtr) {
-//     // Iterate through the box list from end to start
-//     for (int i = numBoxes - 1; i >= 0; i--) {
-//         // Check the hitbox of each box
-//         int hitboxResult = checkHitbox(&boxPtr[i]);
-//         if (hitboxResult != 0) {
-//             // If the hitbox result is non-zero, remove the box
-//             removeBox(&boxPtr, i);
-//         }
-//     }
-// }
-
-// void checkAllBoxes(struct Box* boxPtr) {
-//     int i = numBoxes - 1; // Start from the last box
-//     while (i >= 0) {
-//         // Check the hitbox of each box
-//         int hitboxResult = checkHitbox(&boxPtr[i]);
-//         if (hitboxResult != 0) {
-//             // If the hitbox result is -1, indicating a collision, remove the box
-//             removeBox(&boxPtr, i);
-//         }
-//         i--; // Move to the previous box
-//     }
-// }
 
 #endif

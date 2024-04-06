@@ -11,13 +11,17 @@ void GameLogic() {
 
     int inputs = checkUserInput();
     int direction;
+    if (coolDown > 0) {
+        coolDown--;
+    }
     if (inputs >> 8 != 0 && !coolDown) {
         direction = inputs & 0xFF;
+        coolDown = 15;
         if (inputs >> 16 == 0) {
             if (direction == A_KEY)
-                addBox(&boxPtr, direction);
+                addBox(&boxPtr, 0);
             if (direction == D_KEY)
-                adBox(&boxPtr, 1);
+                addBox(&boxPtr, 1);
             if (direction == W_KEY)
                 addBox(&boxPtr, 2);
             if (direction == S_KEY)
@@ -35,6 +39,8 @@ void GameLogic() {
         }
         
     }
+    updateAllBoxes(boxPtr);
+    checkAllBoxes(boxPtr);
   
 }
 
