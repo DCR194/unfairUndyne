@@ -3,14 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h> 
-
-struct Box {
-    int xPos;
-    int yPos;
-    int xDir;
-    int yDir;
-    int direction;
-};
+#include "magicNumbers.h"
 
 
 void printBox(struct Box* box);
@@ -23,9 +16,9 @@ void updateAllBoxes(struct Box* boxPtr);
 void checkAllBoxes(struct Box* boxPtr);
 
 // EXTERNAL VARIABLES WITH TESTING SHOWN IN BOX LOGIC C FILE
-extern int numBoxes;
-extern int directionFacing;
-extern struct Box* boxPtr;
+extern int numBoxes; //INITIALIZE AS 0
+extern int directionFacing; //INITIALIZE AS 2
+extern struct Box* boxPtr; //INITIALIZE AS NULL
 
 
 void printBox(struct Box* box) {
@@ -176,7 +169,6 @@ void checkAllBoxes(struct Box* boxPtr) {
     for (int i = numBoxes - 1; i >= 0; i--) {
         if (checkHitbox(&boxPtr[i]) != 0) {
             removeBox(&boxPtr, i);
-            
         }
         else {
             //IMPLEMENT LATER
