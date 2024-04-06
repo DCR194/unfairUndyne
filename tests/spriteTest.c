@@ -4,6 +4,26 @@
 #define SIZECUBES 5
 #define XWIDTH 320
 #define YHEIGHT 240
+#define ARROWBOXWIDTH 16
+
+const short int arrowSprite[] = {
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0xffff, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0xffff, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff,
+    0xffff, 0xffff, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000,
+    0x0000, 0x0000, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0xffff, 0x0000, 0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0xffff, 0xffff, 0xffff, 0xffff, 0xffff, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
+    0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000
+};
 
 
 struct Box {
@@ -38,6 +58,7 @@ void drawAllCubes(struct Box* boxes);
 void drawCube(struct Box* a);
 void wait_for_vsync();
 void clear_screen();
+void eraseAllArrows(struct Box* boxes);
 // void draw_line(int x0, int y0, int x1, int y1, short int line_color);
 
 
@@ -110,6 +131,8 @@ int main() {
 
     while (1) {
 
+        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+
         if (numBoxes > 0) {
             printBox(&boxPtr[0]);
         }
@@ -118,6 +141,7 @@ int main() {
             printBox(&boxPtr[1]);
         }
         //updatePosition(&boxPtr[1], 0);
+        eraseAllArrows(boxPtr);
         updateAllBoxes(boxPtr);
 
 
@@ -139,6 +163,10 @@ int main() {
 
         drawAllCubes(boxPtr);
 
+        wait_for_vsync();
+
+        
+
         if (numBoxes == 0) break;
         // printf("\nnumboxes: %d\n", numBoxes);
     }
@@ -149,10 +177,74 @@ int main() {
 
 }
 
+bool inBounds(int x, int y) {
+    return (x < XWIDTH) && (x >= 0) && (y < YHEIGHT) && (y >= 0);
+}
+
+void drawRightArrow(struct Box* a) {
+    for (int x = 0; x < ARROWBOXWIDTH; x++) {
+        for (int y = 0; y < ARROWBOXWIDTH; y++) {
+            if (inBounds(a->xPos + x, a->yPos + y)) {
+                if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
+                    plot_pixel(a->xPos + x - (ARROWBOXWIDTH / 2),
+                        a->yPos + y - (ARROWBOXWIDTH / 2),
+                        arrowSprite[x + (y * ARROWBOXWIDTH)]);
+                }
+            }
+        }
+    }
+}
+
+void eraseSmartArrow(struct Box* a) {
+    for (int x = 0 - abs(a->xDir); x < ARROWBOXWIDTH - abs(a->xDir); x++) {
+        for (int y = 0 /*- a->yDir*/; y < ARROWBOXWIDTH /*- a->yDir*/; y++) {
+            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
+                //if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
+                plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
+                    a->yPos + y - (ARROWBOXWIDTH / 2),
+                    0x0000);
+                //}
+            }
+        }
+    }
+}
+
+void eraseAllArrows(struct Box* boxes) {
+    if (numBoxes <= 0) return;
+    for (int i = 0; i < numBoxes; i++) {
+        if ((&boxes[i])->direction < 2) {
+            eraseSmartArrow(&boxes[i]);
+        }
+
+    }
+}
+
+void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought into it
+    for (int x = 0; x < ARROWBOXWIDTH; x++) {
+        for (int y = 0; y < ARROWBOXWIDTH; y++) {
+            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
+                if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
+                    plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
+                        a->yPos + y - (ARROWBOXWIDTH / 2),
+                        arrowSprite[x + (y * ARROWBOXWIDTH)]);
+                }
+            }
+        }
+    }
+    //plot_pixel(a->xPos, a->yPos, 0xff00);
+    //plot_pixel(a->xPos + 1, a->yPos, 0x0000);
+
+}
+
 void drawAllCubes(struct Box* boxes) {
     if (numBoxes <= 0) return;
     for (int i = 0; i < numBoxes; i++) {
-        drawCube(&boxes[i]);
+        if ((&boxes[i])->direction < 2) {
+            drawSmartArrow(&boxes[i]);
+        }
+        else {
+            drawCube(&boxes[i]);
+        }
     }
 }
 
@@ -163,6 +255,7 @@ void drawCube(struct Box* a) {
         }
     }
 }
+
 
 
 void plot_pixel(int x, int y, short int line_color) {
@@ -211,13 +304,13 @@ void setBoxValues(struct Box* box, int direction) {
     if (direction == 0) { //  --->
         box->xPos = 0;
         box->yPos = YHEIGHT / 2;
-        box->xDir = 1;
+        box->xDir = 4;
         box->yDir = 0;
     }
     if (direction == 1) { //  <---
         box->xPos = XWIDTH;
         box->yPos = YHEIGHT / 2;
-        box->xDir = -1;
+        box->xDir = -4;
         box->yDir = 0;
     }
     if (direction == 2) { //Up
