@@ -35,42 +35,46 @@ struct Box* boxPtr = NULL;
 int numBoxes = 0;
 int directionFacing = 2;
 
+
 int main() {
-
-    
-    addBox(&boxPtr, 0); //add a left arrow; -->
-    addBox(&boxPtr, 1); // add a right arrow <--
-
+    addBox(&boxPtr, 0); // Add a left arrow -->
+    addBox(&boxPtr, 1); // Add a right arrow <--
+ 
     printf("\nnumboxes: %d\n", numBoxes);
-    //addBox(&boxPtr, 0);
 
-    //struct Box* boxPtr = NULL;
-    //addBox(&boxPtr, 0);
-
-    while (1) {
-
-        if(numBoxes > 0){
-            printBox(&boxPtr[0]);
+    while (numBoxes > 0) {
+        struct Box* boxPtr2 = boxPtr;
+        int track = numBoxes;
+        for (int i = 0; i < numBoxes; i++) {
+            printBox(&boxPtr[i]);
         }
-        
-        if(numBoxes == 2){
-            printBox(&boxPtr[1]);
-        }
-        //updatePosition(&boxPtr[1], 0);
+
         updateAllBoxes(boxPtr);
-        
-
-        // WILL FIX CHECK ALL BOXES AND REPLACE THIS PART
-        if (checkHitbox(&boxPtr[0]) != 0) {
-            removeBox(&boxPtr, 0);
-        }
-        if (checkHitbox(&boxPtr[1]) != 0) {
-            removeBox(&boxPtr, 1);
-        }
+        checkAllBoxes(boxPtr);
 
         printf("\nnumboxes: %d\n", numBoxes);
     }
 
+
+    printf("\nend\n");
+
+    addBox(&boxPtr, 0); // Add a left arrow -->
+    addBox(&boxPtr, 1); // Add a right arrow <--
+
+    while (numBoxes > 0) {
+        struct Box* boxPtr2 = boxPtr;
+        int track = numBoxes;
+        for (int i = 0; i < numBoxes; i++) {
+            printBox(&boxPtr[i]);
+        }
+
+        updateAllBoxes(boxPtr);
+        checkAllBoxes(boxPtr);
+
+        printf("\nnumboxes: %d\n", numBoxes);
+    }
+
+    return 0;
 }
 
 void wait_for_vsync() {
