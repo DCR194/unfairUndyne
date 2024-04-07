@@ -27,7 +27,7 @@ extern volatile int* pixel_ctrl_ptr; //INITIALIZE WITH PIXEL_CONTROL_ADDRESS
 
 
 
-
+extern int health;
 extern bool hit_flag; //INITIALIZE AS FALSE
 extern bool hit_reset; //INITIALIZE AS FALSE
 extern bool block_flag; //INITIALIZE AS FALSE
@@ -191,6 +191,7 @@ void checkAllBoxes(struct Box* boxPtr) {
                 removeBox(&boxPtr, i);
                 hit_flag = true;
                 hit_reset = true;
+                health--;
             }
             else if (hit_type == BLOCKED_HIT){
                 pixel_buffer_start = *(pixel_ctrl_ptr);
