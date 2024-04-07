@@ -116,19 +116,6 @@ int main() {
 
         wait_for_vsync();
 
-        /*
-        if (hit_flag) {
-            hit_flag = false;
-            //clear_screen();
-            pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-            wait_for_vsync();
-            clear_screen();
-            //pixel_buffer_start = *(pixel_ctrl_ptr + 1);
-        }
-        */
-
-        // printf("\nNum: %d\n", numBoxes);
-        // printf("\nnumboxes: %d\n", numBoxes);
     }
 
 }
