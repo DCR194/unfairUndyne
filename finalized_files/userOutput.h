@@ -243,11 +243,14 @@ int abs(int a) {
 
 void drawHealth(int offset) {
     for (int i=0; i<health; i++) {
-        if (i == offset) {
-            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION));
+        if (abs(i+offset) < 5) {
+            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION - abs(i + offset)));
         }
-        else {
-            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION_ELEVATED));
+        else if (i+offset < -SMALL_HEART_MOVEMENT) {
+            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION - SMALL_HEART_MOVEMENT));
+        }
+        else if (i+offset > SMALL_HEART_MEASURE) {
+            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION + SMALL_HEART_MOVEMENT));
         }
     }
 }
