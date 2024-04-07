@@ -394,17 +394,22 @@ void swap(int* a, int* b) {
 
 void checkAllBoxes(struct Box* boxPtr) {
     for (int i = numBoxes - 1; i >= 0; i--) {
-        if (checkHitbox(&boxPtr[i]) != 0) {
-            //updatePosition(&boxPtr[i]);
-            //eraseSmartArrow(&boxPtr[i]);
+        int hit_type = checkHitbox(&boxPtr[i]);
+        if (hit_type == -2) {
             pixel_buffer_start = *(pixel_ctrl_ptr);
             eraseCollidedArrow(&boxPtr[i]);
             pixel_buffer_start = *(pixel_ctrl_ptr + 1);
             removeBox(&boxPtr, i);
             hit_flag = true;
+            hit_reset = true;
         }
-        else {
-
+        else if (hit_type == -1){
+            pixel_buffer_start = *(pixel_ctrl_ptr);
+            eraseCollidedArrow(&boxPtr[i]);
+            pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+            removeBox(&boxPtr, i);
+            block_flag = true;
+            block_reset = true;
         }
     }
 }

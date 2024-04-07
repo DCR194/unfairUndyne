@@ -1,21 +1,19 @@
 #ifndef USER_OUTPUT_C
 #define USER_OUTPUT_C
 
+
 #include "AudioSpriteLists.h"
 #include "magicNumbers.h"
 
 extern volatile int pixel_buffer_start; // VALUE DEPENDANT ON VSYNC BEHAVIOR
 extern int globalTime; //INITIALIZE AS 0
 extern int numBoxes; //INITIALIZE AS 0
+extern short int *backGround; //GETS SET DEPENDING ON MENU / GAME MODE
 
 volatile int* LEDaddress = 0xFF200040;
 volatile int* AudioBase = 0xFF203040;
 
-
-
-
 bool inBounds(int x, int y);
-void drawRightArrow(struct Box* a);
 void eraseSmartArrow(struct Box* a);
 void eraseAllArrows(struct Box* boxes);
 void drawSmartArrow(struct Box* a);
@@ -25,7 +23,7 @@ int decodeHex(int value);
 void setSevenSegment(volatile long* segAddress, int value);
 void draw_line(int x0, int y0, int x1, int y1, short int line_color);
 void plot_pixel(int x, int y, short int line_color);
-void clear_screen();
+void draw_background();
 void swap(int* a, int* b);
 int abs(int a);
 
@@ -36,19 +34,6 @@ bool inBounds(int x, int y) {
     return (x < XWIDTH) && (x >= 0) && (y < YHEIGHT) && (y >= 0);
 }
 
-void drawRightArrow(struct Box* a) {
-    for (int x = 0; x < ARROWBOXWIDTH; x++) {
-        for (int y = 0; y < ARROWBOXWIDTH; y++) {
-            if (inBounds(a->xPos + x, a->yPos + y)) {
-                if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
-                    plot_pixel(a->xPos + x - (ARROWBOXWIDTH / 2),
-                        a->yPos + y - (ARROWBOXWIDTH / 2),
-                        arrowSprite[x + (y * ARROWBOXWIDTH)]);
-                }
-            }
-        }
-    }
-}
 
 void eraseSmartArrow(struct Box* a) {
     for (int x = 0 - abs(a->xDir); x < ARROWBOXWIDTH - abs(a->xDir); x++) {
@@ -64,6 +49,7 @@ void eraseSmartArrow(struct Box* a) {
     }
 }
 
+
 void eraseAllArrows(struct Box* boxes) {
     if (numBoxes <= 0) return;
     for (int i = 0; i < numBoxes; i++) {
@@ -73,6 +59,7 @@ void eraseAllArrows(struct Box* boxes) {
 
     }
 }
+
 
 void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought into it
     for (int x = 0; x < ARROWBOXWIDTH; x++) {
@@ -86,10 +73,8 @@ void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought
             }
         }
     }
-    //plot_pixel(a->xPos, a->yPos, 0xff00);
-    //plot_pixel(a->xPos + 1, a->yPos, 0x0000);
-
 }
+
 
 void writeToAudio(int audioSignal /* ADD INPUT FOR MUSIC LENGTH AND */) {
     int fifoSpace = *(AudioBase + 1) & 0xFF000000;
@@ -221,11 +206,15 @@ void plot_pixel(int x, int y, short int line_color) {
     *one_pixel_address = line_color;
 }
 
-void clear_screen() {
+void draw_background() {
     int y, x;
-    for (x = 0; x < 320; x++)
-        for (y = 0; y < 240; y++)
-            plot_pixel(x, y, 0);
+    short int color;
+    for (x = 0; x < XWIDTH; x++) {
+        for (y = 0; y < YHEIGHT; y++) {
+            color = backGround[x + (y * XWIDTH)];
+            plot_pixel(x, y, color);
+        }
+    }
 }
 
 void swap(int* a, int* b) {

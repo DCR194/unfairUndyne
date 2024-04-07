@@ -1,17 +1,8 @@
 #ifndef USER_INPUT_C
 #define USER_INPUT_C
 
-#define LEFT_ARROW 0x6B
-#define RIGHT_ARROW 0x74
-#define UP_ARROW 0x75
-#define DOWN_ARROW 0x72
-#define W_KEY 0x1D
-#define A_KEY 0x1C
-#define S_KEY 0x1B
-#define D_KEY 0x23
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "magicNumbers.h"
 
 extern char key; //INITIALIZE AS 0
 int checkUserInput() {
@@ -29,7 +20,7 @@ int checkUserInput() {
     {
         /* save the last three bytes of data */
         press = key;
-        pressed = ((press&0xFF) == 0xF0)? 1 : 0;
+        pressed = ((press&0xFF) == 0xF0)? ON : OFF;
         key = PS2_data & 0xFF;
 
         switch (key) {
@@ -50,9 +41,11 @@ int checkUserInput() {
                 return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
             case S_KEY: //S key
                 return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+            case SPACE_KEY:
+                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
         }        
     }
-    return 0;
+    return OFF;
 }
 
 #endif
