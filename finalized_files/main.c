@@ -26,7 +26,7 @@ int main() {
                 backGround = easyBG;
                 difficultySpeed = DIFFICULTY_SPEED_SLOW;
                 coolDown_time = COOLDOWN_TIMER_EASY;
-                health = HGIH_HEALTH;
+                health = HIGH_HEALTH;
             }
             else {
                 backGround = hardBG;
