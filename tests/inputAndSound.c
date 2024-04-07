@@ -3231,7 +3231,7 @@ int getSound(int array[], int* index, int size, bool* soundcondition) {
     value = array[*index];
 
     (*index)++;
-    (*index)++;
+    //(*index)++;
     if (*index >= size) {
         *index = 0;
         *soundcondition = false;
