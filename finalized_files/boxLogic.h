@@ -18,6 +18,7 @@ void checkAllBoxes(struct Box* boxPtr);
 extern int numBoxes; //INITIALIZE AS 0
 extern int directionFacing; //INITIALIZE AS 2
 extern struct Box* boxPtr; //INITIALIZE AS NULL
+extern int mrAndersonIndex; //HANDLED IN AUDIO
 
 
 
@@ -191,6 +192,7 @@ void checkAllBoxes(struct Box* boxPtr) {
                 removeBox(&boxPtr, i);
                 hit_flag = true;
                 hit_reset = true;
+                mrAndersonIndex = 0;
                 health--;
             }
             else if (hit_type == BLOCKED_HIT){
