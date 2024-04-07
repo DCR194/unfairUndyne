@@ -18,7 +18,15 @@ void checkAllBoxes(struct Box* boxPtr);
 extern int numBoxes; //INITIALIZE AS 0
 extern int directionFacing; //INITIALIZE AS 2
 extern struct Box* boxPtr; //INITIALIZE AS NULL
+
+
+
+
+// NEEDS HANDLING PROPERLY
 extern volatile int* pixel_ctrl_ptr; //INITIALIZE WITH PIXEL_CONTROL_ADDRESS
+
+
+
 
 extern bool hit_flag; //INITIALIZE AS FALSE
 extern bool hit_reset; //INITIALIZE AS FALSE

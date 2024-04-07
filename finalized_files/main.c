@@ -4,48 +4,89 @@
 
 
 
-key = OFF;
-coolDown_time = COOLDOWN_TIMER_EASY;
+void reset();
+void intializations();
+
+
+int menuPosition;
+int defenderInput;
+int health;
 
 int main() {
 
+    intializations();
+
     //WHERE LEGENDS COOK
     while (1) {
-        int menuPosition = MENU_START;
+        
 
         while (1) { // MENU LOOP
-            
-            int defenderInput = checkUserInput();
-            if (defenderInput >> 8 != OFF && defenderInput >> 16 == DEFENDER) {
-                if (defenderInput && 0xFF == UP_ARROW || defenderInput & 0xFF == DOWN_ARROW) {
-                    menuPosition = -menuPosition;
-                }
-            }
 
             if (menuPosition == MENU_START) {
                 backGround = easyBG;
+                difficultySpeed = DIFFICULTY_SPEED_SLOW;
+                coolDown_time = COOLDOWN_TIMER_EASY;
+                health = HIGH_HEALTH;
             }
             else {
                 backGround = hardBG;
+                difficultySpeed = DIFFICULTY_SPEED_FAST;
+                coolDown_time = COOLDOWN_TIMER_HARD;
+                health = LOW_HEALTH;
             }
 
             // WAIT FOR V_SYNC
             draw_background();
 
+            defenderInput = checkUserInput();
+            if (defenderInput >> 8 != OFF && defenderInput >> 16 == DEFENDER) {
+                if (defenderInput && 0xFF == UP_ARROW || defenderInput & 0xFF == DOWN_ARROW) {
+                    menuPosition = -menuPosition;
+                }
+                else if (defenderInput && 0xFF == SPACE_KEY) {
+                    break;
+                }
+            }
+
         }
 
 
-        numBoxes = 0;
-        boxPtr = NULL;
-        globalTime = 0;
 
         while (1) { // GAME LOOP
 
+
             GameLogic();
+            if (health == 0) {
+
+            }
 
         }
+
+        reset();
     }
 
 
     return 0;
+}
+
+
+void reset() {
+    free(boxPtr);
+    intializations;
+}
+
+void intializations() {
+    key = OFF;
+    coolDown_time = COOLDOWN_TIMER_EASY;
+    menuPosition = MENU_START;
+    directionFacing = UP_DIRECTION;
+    numBoxes = 0;
+    boxPtr = NULL;
+    globalTime = 0;
+    difficultySpeed = DIFFICULTY_SPEED_SLOW;
+    hit_flag = false;
+    hit_reset = false;
+    block_flag = false;
+    block_reset = false;
+    health = HIGH_HEALTH;
 }
