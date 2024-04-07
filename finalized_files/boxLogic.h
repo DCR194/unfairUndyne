@@ -1,6 +1,7 @@
 #ifndef BOXLOGIC_H
 #define BOXLOGIC_H
 
+#include "userOutput.h"
 #include "magicNumbers.h"
 
 
@@ -17,6 +18,14 @@ void checkAllBoxes(struct Box* boxPtr);
 extern int numBoxes; //INITIALIZE AS 0
 extern int directionFacing; //INITIALIZE AS 2
 extern struct Box* boxPtr; //INITIALIZE AS NULL
+extern volatile int* pixel_ctrl_ptr; //INITIALIZE WITH PIXEL_CONTROL_ADDRESS
+
+extern bool hit_flag; //INITIALIZE AS FALSE
+extern bool hit_reset; //INITIALIZE AS FALSE
+extern bool block_flag; //INITIALIZE AS FALSE
+extern bool block_reset; //INITIALIZE AS FALSE
+
+extern int difficultySpeed; //INITIALIZED IN MENU
 
 
 void printBox(struct Box* box) {
@@ -47,33 +56,33 @@ void removeBox(struct Box** boxPtr, int index) {
 // Function to initialize the attributes of the newest box
 void setBoxValues(struct Box* box, int direction) {
     // Set position and direction values based on the direction parameter
-    if (direction == 0) { //Laft
-        box->xPos = 149;
-        box->yPos = 119;
-        box->xDir = 1;
-        box->yDir = 0;
-        box->direction = 0;
+    if (direction == LEFT_DIRECTION) { //Laft
+        box->xPos = 0;
+        box->yPos = YHEIGHT/2;
+        box->xDir = difficultySpeed;
+        box->yDir = OFF;
+        box->direction = LEFT_DIRECTION;
     }
-    if (direction == 1) { //Right
-        box->xPos = 170;
-        box->yPos = 119;
-        box->xDir = -1;
-        box->yDir = 0;
-        box->direction = 1;
+    if (direction == RIGHT_DIRECTION) { //Right
+        box->xPos = XWIDTH;
+        box->yPos = YHEIGHT/2;
+        box->xDir = -difficultySpeed;
+        box->yDir = OFF;
+        box->direction = RIGHT_DIRECTION;
     }
-    if (direction == 2) { //Up
-        box->xPos = 159;
+    if (direction == UP_DIRECTION) { //Up
+        box->xPos = XWIDTH/2;
         box->yPos = 0;
-        box->xDir = 0;
-        box->yDir = 1;
-        box->direction = 2;
+        box->xDir = OFF;
+        box->yDir = difficultySpeed;
+        box->direction = UP_DIRECTION;
     }
-    if (direction == 3) { //Down
-        box->xPos = 159;
-        box->yPos = 239;
-        box->xDir = 0;
-        box->yDir = -1;
-        box->direction = 3;
+    if (direction == DOWN_DIRECTION) { //Down
+        box->xPos = XWIDTH/2;
+        box->yPos = YHEIGHT;
+        box->xDir = OFF;
+        box->yDir = -difficultySpeed;
+        box->direction = DOWN_DIRECTION;
     }
     // Add other conditions as needed
 }
@@ -86,10 +95,10 @@ void updatePosition(struct Box* box) {
 int checkHitbox(struct Box* boxPtr) {
     if (boxPtr->direction == 0 && 159 - boxPtr->xPos < 30) { //Left arrow hitboxes
         if (159 - boxPtr->xPos < 9) {
-            return -2;
+            return GOT_HIT;
         }
         else if (directionFacing == 0) {
-            return -1;
+            return BLOCKED_HIT;
         }
         else {
             return 0;
@@ -98,10 +107,10 @@ int checkHitbox(struct Box* boxPtr) {
 
     if (boxPtr->direction == 1 && boxPtr->xPos - 159 < 30) { //Right arrow hitboxes
         if (boxPtr->xPos - 159 < 9) {
-            return -2;
+            return GOT_HIT;
         }
         else if (directionFacing == 1) {
-            return -1;
+            return BLOCKED_HIT;
         }
         else {
             return 0;
@@ -110,10 +119,10 @@ int checkHitbox(struct Box* boxPtr) {
 
     if (boxPtr->direction == 2 && 119 - boxPtr->yPos < 30) { //Up arrow hitboxes
         if (119 - boxPtr->yPos < 9) {
-            return -2;
+            return GOT_HIT;
         }
         else if (directionFacing == 2) {
-            return -1;
+            return BLOCKED_HIT;
         }
         else {
             return 0;
@@ -122,10 +131,10 @@ int checkHitbox(struct Box* boxPtr) {
 
     if (boxPtr->direction == 3 && boxPtr->yPos - 119 < 30) { //Down arrow hitboxes
         if (boxPtr->yPos - 119 < 9) {
-            return -2;
+            return GOT_HIT;
         }
         else if (directionFacing == 3) {
-            return -1;
+            return BLOCKED_HIT;
         }
         else {
             return 0;
@@ -165,11 +174,24 @@ void updateAllBoxes(struct Box* boxPtr) {
 
 void checkAllBoxes(struct Box* boxPtr) {
     for (int i = numBoxes - 1; i >= 0; i--) {
-        if (checkHitbox(&boxPtr[i]) != 0) {
-            removeBox(&boxPtr, i);
-        }
-        else {
-            //IMPLEMENT LATER
+        for (int i = numBoxes - 1; i >= 0; i--) {
+            int hit_type = checkHitbox(&boxPtr[i]);
+            if (hit_type == GOT_HIT) {
+                pixel_buffer_start = *(pixel_ctrl_ptr);
+                eraseCollidedArrow(&boxPtr[i]);
+                pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+                removeBox(&boxPtr, i);
+                hit_flag = true;
+                hit_reset = true;
+            }
+            else if (hit_type == BLOCKED_HIT){
+                pixel_buffer_start = *(pixel_ctrl_ptr);
+                eraseCollidedArrow(&boxPtr[i]);
+                pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+                removeBox(&boxPtr, i);
+                block_flag = true;
+                block_reset = true;
+            }
         }
     }
 }

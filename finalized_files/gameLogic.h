@@ -5,7 +5,7 @@
 #include "userInput.h"
 
 //COOLDOWN SHOULD BE INITIALIZED AS NON ZERO
-extern int coolDown;
+extern int coolDown_time; // INITIALIZE AS COOLDOWN_TIMER
 void GameLogic() {
 
     // INPUT FORMATTED AS: BYTE1, BYTE2, BYTE3
@@ -15,33 +15,33 @@ void GameLogic() {
     // Example 00016B: player 2 is using arrow keys, currently held down arrow key, and the key is left (6B)
     int inputs = checkUserInput();
     int direction;
+    int coolDown;
     if (coolDown > 0) {
         coolDown--;
     }
-    if (inputs >> 8 != 0 && !coolDown) {
-        direction = inputs & 0xFF;
-        coolDown = 15;
-        if (inputs >> 16 == 0) {
+    direction = inputs & 0xFF;
+    if (inputs >> 8 != OFF && !coolDown) {
+        coolDown = coolDown_time;
+        if (inputs >> 16 == ATTACKER) {
             if (direction == A_KEY)
-                addBox(&boxPtr, 0);
+                addBox(&boxPtr, LEFT_DIRECTION);
             if (direction == D_KEY)
-                addBox(&boxPtr, 1);
+                addBox(&boxPtr, RIGHT_DIRECTION);
             if (direction == W_KEY)
-                addBox(&boxPtr, 2);
+                addBox(&boxPtr, UP_DIRECTION);
             if (direction == S_KEY)
-                addBox(&boxPtr, 3);
+                addBox(&boxPtr, DOWN_DIRECTION);
         }
-        else {
-            if (direction == LEFT_ARROW)
-                directionFacing = 0;
-            if (direction == RIGHT_ARROW)
-                directionFacing = 1;
-            if (direction == UP_ARROW)
-                directionFacing = 2;
-            if (direction == DOWN_ARROW)
-                directionFacing = 3;
-        }
-        
+    }
+    else if (inputs >> 8 != OFF && inputs >> 16 == DEFENDER) {
+        if (direction == LEFT_ARROW)
+            directionFacing = LEFT_DIRECTION;
+        if (direction == RIGHT_ARROW)
+            directionFacing = RIGHT_DIRECTION;
+        if (direction == UP_ARROW)
+            directionFacing = UP_DIRECTION;
+        if (direction == DOWN_ARROW)
+            directionFacing = DOWN_DIRECTION;
     }
     updateAllBoxes(boxPtr);
     checkAllBoxes(boxPtr);

@@ -86,9 +86,6 @@ void plot_pixel(int x, int y, short int line_color) {
 
 void clear_screen() {
     int y, x;
-    /*for (x = 0; x < 320; x++)
-        for (y = 0; y < 240; y++)
-            plot_pixel(x, y, 0);*/
     short int color;
     for (x = 0; x < XWIDTH; x++) {
         for (y = 0; y < YHEIGHT; y++) {

@@ -20,7 +20,7 @@ int checkUserInput() {
     {
         /* save the last three bytes of data */
         press = key;
-        pressed = ((press&0xFF) == 0xF0)? 1 : 0;
+        pressed = ((press&0xFF) == 0xF0)? ON : OFF;
         key = PS2_data & 0xFF;
 
         switch (key) {
@@ -45,7 +45,7 @@ int checkUserInput() {
                 return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
         }        
     }
-    return 0;
+    return OFF;
 }
 
 #endif
