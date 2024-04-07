@@ -2828,7 +2828,7 @@ int main() {
     addBox(&boxPtr, 1);
     while (1) {
 
-        pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+        
 
         eraseAllArrows(boxPtr);
         // updateAllBoxes(boxPtr);
@@ -2839,7 +2839,7 @@ int main() {
 
         drawAllCubes(boxPtr);
 
-        drawShield(0);
+        drawShield(90);
 
         wait_for_vsync();
 
@@ -3213,6 +3213,8 @@ void wait_for_vsync() {
         //printf(" %d \n", currentSound);
 
         if ((status & 1) == 0) {
+            globalTime += 1.0/60.0;
+            pixel_buffer_start = *(pixel_ctrl_ptr + 1);
             return;
         }
 
