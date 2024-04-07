@@ -24,9 +24,15 @@
 #define UP_DIRECTION 2
 #define DOWN_DIRECTION 3
 
+#define BLACK 0x0000
+
 #define MENU_START 1
 #define HIGH_HEALTH 4
 #define LOW_HEALTH 2
+#define SMALL_HEART_MEASURE 5
+#define HEALTH_POSITION 220
+#define HEALTH_POSITION_ELEVATED 215
+
 
 #define OFF 0
 #define ON 1

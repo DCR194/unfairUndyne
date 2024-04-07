@@ -50,7 +50,7 @@ void eraseSmartArrow(struct Box* a) {
                 //if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
                 plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
                     a->yPos + y - (ARROWBOXWIDTH / 2),
-                    0x0000);
+                    BLACK);
                 //}
             }
         }
@@ -73,7 +73,7 @@ void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought
     for (int x = 0; x < ARROWBOXWIDTH; x++) {
         for (int y = 0; y < ARROWBOXWIDTH; y++) {
             if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
-                if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
+                if (arrowSprite[x + (y * ARROWBOXWIDTH)] != BLACK) {
                     plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
                         a->yPos + y - (ARROWBOXWIDTH / 2),
                         arrowSprite[x + (y * ARROWBOXWIDTH)]);
@@ -237,6 +237,28 @@ int abs(int a) {
     }
     else {
         return -1 * a;
+    }
+}
+
+
+void drawHealth(int offset) {
+    for (int i=0; i<health; i++) {
+        if (i == offset) {
+            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION));
+        }
+        else {
+            drawMiniHeart(((2*i) + (SMALL_HEART_MEASURE*i)), (HEALTH_POSITION_ELEVATED));
+        }
+    }
+}
+
+void drawMiniHeart(int x, int y) {
+    for (int i = 0; i < SMALL_HEART_MEASURE; i++) {
+        for (int j = 0; j < SMALL_HEART_MEASURE; j++) {
+            if (miniHeartSprite[x + (y * SMALL_HEART_MEASURE)] != BLACK) {
+                plot_pixel((x+i), (y+j), miniHeartSprite[x + (y * SMALL_HEART_MEASURE)]);
+            }
+        }
     }
 }
 

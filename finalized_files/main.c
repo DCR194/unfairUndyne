@@ -10,7 +10,6 @@ void intializations();
 
 int menuPosition;
 int defenderInput;
-int health;
 
 int main() {
 
@@ -57,10 +56,13 @@ int main() {
 
             GameLogic();
             if (health == 0) {
-
+                break;
             }
 
         }
+
+        // WAIT FOR VSYNC
+
 
         reset();
     }
