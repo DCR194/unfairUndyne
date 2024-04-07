@@ -19,6 +19,11 @@
 #define SHIELDSIZE 20
 #define M_PI 3.14159265358979323846
 
+#define LEFT_DIRECTION 0
+#define RIGHT_DIRECTION 1
+#define UP_DIRECTION 2
+#define DOWN_DIRECTION 3
+
 
 const short int arrowSprite[] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -2828,7 +2833,7 @@ int main() {
     addBox(&boxPtr, 1);
     while (1) {
 
-        
+
 
         eraseAllArrows(boxPtr);
         // updateAllBoxes(boxPtr);
@@ -2839,7 +2844,7 @@ int main() {
 
         drawAllCubes(boxPtr);
 
-        drawShield(90);
+        drawShield(directionFacing);
 
         wait_for_vsync();
 
@@ -2870,7 +2875,7 @@ int fastSin(int angle) {
     if (angle == 90) {
         return 1;
     }
-    else if (angle == 270){
+    else if (angle == 270) {
         return -1;
     }
     else if (angle == 0 || angle == 180) {
@@ -2891,7 +2896,21 @@ int rotateY(int x, int y, int angle) {
     return (int)(x * fastSin(angle)) + (y * fastCos(angle));
 }
 
-void drawShield(double angle) {
+void drawShield(double direction) {
+    double angle = 0;
+    if (direction == LEFT_DIRECTION) {
+        angle = 0;
+    }
+    else if (direction == RIGHT_DIRECTION) {
+        angle = 180;
+    }
+    else if (direction == UP_DIRECTION) {
+        angle = 90;
+    }
+    else if (direction == DOWN_DIRECTION) {
+        angle = 270;
+    }
+
     static int centerX = XWIDTH / 2;
     static int centerY = YHEIGHT / 2;
     for (int x = 0; x < SHIELDSIZE; x++) {
@@ -2933,11 +2952,12 @@ void eraseSmartArrow(struct Box* a) {
 
 void eraseCollidedArrow(struct Box* a) {
     for (int x = 0 - abs(a->xDir); x < ARROWBOXWIDTH - abs(a->xDir); x++) {
-        for (int y = 0 /*- a->yDir*/; y < ARROWBOXWIDTH /*- a->yDir*/; y++) {
-            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
+        for (int y = 0 - abs(a->yDir); y < ARROWBOXWIDTH + abs(a->yDir); y++) {
+            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
+                a->yPos + (y - (ARROWBOXWIDTH / 2) * (a->xDir / abs(a->xDir))))) {
                 //if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
                 plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
-                    a->yPos + y - (ARROWBOXWIDTH / 2),
+                    a->yPos + (y - (ARROWBOXWIDTH / 2)) * (a->yDir / abs(a->yDir)),
                     0x0000);
                 //}
             }
@@ -2956,12 +2976,29 @@ void eraseAllArrows(struct Box* boxes) {
 }
 
 void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought into it
+    double angle = 0;
+
+    int centerX = a->xPos;
+    int centerY = a->yPos;
+
+    if (a->direction == LEFT_DIRECTION) {
+        angle = 0;
+    }
+    else if (a->direction == RIGHT_DIRECTION) {
+        angle = 180;
+    }
+    else if (a->direction == UP_DIRECTION) {
+        angle = 90;
+    }
+    else if (a->direction == DOWN_DIRECTION) {
+        angle = 270;
+    }
     for (int x = 0; x < ARROWBOXWIDTH; x++) {
         for (int y = 0; y < ARROWBOXWIDTH; y++) {
             if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
                 if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
-                    plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
-                        a->yPos + y - (ARROWBOXWIDTH / 2),
+                    plot_pixel(rotateX(x - (ARROWBOXWIDTH / 2), y - (ARROWBOXWIDTH / 2), angle) + centerX,
+                        rotateY(x - (ARROWBOXWIDTH / 2), y - (ARROWBOXWIDTH / 2), angle) + centerY,
                         arrowSprite[x + (y * ARROWBOXWIDTH)]);
                 }
             }
@@ -2978,12 +3015,7 @@ void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought
 void drawAllCubes(struct Box* boxes) {
     if (numBoxes <= 0) return;
     for (int i = 0; i < numBoxes; i++) {
-        if ((&boxes[i])->direction < 2) {
-            drawSmartArrow(&boxes[i]);
-        }
-        else {
-            drawCube(&boxes[i]);
-        }
+        drawSmartArrow(&boxes[i]);
     }
 }
 
@@ -3213,7 +3245,7 @@ void wait_for_vsync() {
         //printf(" %d \n", currentSound);
 
         if ((status & 1) == 0) {
-            globalTime += 1.0/60.0;
+            globalTime += 1.0 / 60.0;
             pixel_buffer_start = *(pixel_ctrl_ptr + 1);
             return;
         }
