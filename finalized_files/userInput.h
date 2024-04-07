@@ -25,13 +25,13 @@ int checkUserInput() {
 
         switch (key) {
             case LEFT_ARROW: //left
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+                return output = 0xFFFFFF & ((0x01 << 16) | (pressed << 8) | (key));
             case RIGHT_ARROW: //right
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+                return output = 0xFFFFFF & ((0x01 << 16) | (pressed << 8) | (key));
             case UP_ARROW: //up
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+                return output = 0xFFFFFF & ((0x01 << 16) | (pressed << 8) | (key));
             case DOWN_ARROW: //down
-                return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));
+                return output = 0xFFFFFF & ((0x01 << 16) | (pressed << 8) | (key));
     
             case A_KEY: //A key
                 return output = 0xFFFFFF & ((0x00 << 16) | (pressed << 8) | (key));

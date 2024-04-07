@@ -34,6 +34,7 @@
 #define SMALL_HEART_MOVEMENT 5
 #define SMALL_HEART_CYCLE 7
 
+#define MRANDERSON_LENGTH 21343
 
 #define OFF 0
 #define ON 1

@@ -8,6 +8,7 @@
 extern int globalTime; //INITIALIZE AS 0
 extern int numBoxes; //INITIALIZE AS 0
 extern short int *backGround; //GETS SET DEPENDING ON MENU / GAME MODE
+extern int mrAndersonIndex; //HANDLED IN AUDIO
 
 volatile int* LEDaddress = 0xFF200040;
 volatile int* AudioBase = 0xFF203040;
@@ -45,11 +46,12 @@ bool inBounds(int x, int y) {
 
 void eraseSmartArrow(struct Box* a) {
     for (int x = 0 - abs(a->xDir); x < ARROWBOXWIDTH - abs(a->xDir); x++) {
-        for (int y = 0 /*- a->yDir*/; y < ARROWBOXWIDTH /*- a->yDir*/; y++) {
-            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)), a->yPos + y)) {
+        for (int y = 0 - abs(a->yDir); y < ARROWBOXWIDTH + abs(a->yDir); y++) {
+            if (inBounds(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
+                a->yPos + (y - (ARROWBOXWIDTH / 2) * (a->xDir / abs(a->xDir))))) {
                 //if (arrowSprite[x + (y * ARROWBOXWIDTH)] != 0x0000) {
                 plot_pixel(a->xPos + (x - (ARROWBOXWIDTH / 2)) * (a->xDir / abs(a->xDir)),
-                    a->yPos + y - (ARROWBOXWIDTH / 2),
+                    a->yPos + (y - (ARROWBOXWIDTH / 2)) * (a->yDir / abs(a->yDir)),
                     BLACK);
                 //}
             }
@@ -80,6 +82,28 @@ void drawSmartArrow(struct Box* a) { // draw the arrows but put a little thought
                 }
             }
         }
+    }
+}
+
+
+void wait_for_vsync() {
+    volatile int* pixel_ctrl_ptr = (int*)0xFF203020;
+    *pixel_ctrl_ptr = 1;
+    int status, currentSound;
+    while (1) {
+        status = *(pixel_ctrl_ptr + 3);
+        currentSound = 0;
+        currentSound += getSound(mrAndersonSound, &mrAndersonIndex, MRANDERSON_LENGTH, &hit_flag);
+        writeToAudio(currentSound);
+
+        //printf(" %d \n", currentSound);
+
+        if ((status & 1) == 0) {
+            globalTime += 1.0 / 60.0;
+            pixel_buffer_start = *(pixel_ctrl_ptr + 1);
+            return;
+        }
+
     }
 }
 

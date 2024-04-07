@@ -78,6 +78,7 @@ void reset() {
 }
 
 void intializations() {
+    mrAndersonIndex = OFF;
     key = OFF;
     coolDown_time = COOLDOWN_TIMER_EASY;
     menuPosition = MENU_START;
