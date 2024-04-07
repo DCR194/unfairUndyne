@@ -5,13 +5,21 @@
 #include "AudioSpriteLists.h"
 #include "magicNumbers.h"
 
-extern volatile int pixel_buffer_start; // VALUE DEPENDANT ON VSYNC BEHAVIOR
 extern int globalTime; //INITIALIZE AS 0
 extern int numBoxes; //INITIALIZE AS 0
 extern short int *backGround; //GETS SET DEPENDING ON MENU / GAME MODE
 
 volatile int* LEDaddress = 0xFF200040;
 volatile int* AudioBase = 0xFF203040;
+
+
+
+
+// FIGURE OUT PIXEL BUFFER VISUALS LATER
+volatile int pixel_buffer_start; // VALUE DEPENDANT ON VSYNC BEHAVIOR
+
+
+
 
 bool inBounds(int x, int y);
 void eraseSmartArrow(struct Box* a);

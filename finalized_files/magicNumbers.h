@@ -5,7 +5,7 @@
 #include "stdio.h"
 #include "stdbool.h"
 
-#define SIZECUBES 5
+#define EMPTY 0
 #define XWIDTH 320
 #define YHEIGHT 240
 #define ARROWBOXWIDTH 16
@@ -25,12 +25,16 @@
 #define DOWN_DIRECTION 3
 
 #define MENU_START 1
+#define HIGH_HEALTH 4
+#define LOW_HEALTH 2
 
 #define OFF 0
 #define ON 1
 
 #define COOLDOWN_TIMER_EASY 20000
 #define COOLDOWN_TIMER_HARD 100
+#define DIFFICULTY_SPEED_SLOW 2
+#define DIFFICULTY_SPEED_FAST 5
 
 #define ATTACKER 0
 #define DEFENDER 1
