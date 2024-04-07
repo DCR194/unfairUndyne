@@ -1,8 +1,6 @@
 #ifndef BOXLOGIC_H
 #define BOXLOGIC_H
 
-#include <stdio.h>
-#include <stdlib.h> 
 #include "magicNumbers.h"
 
 

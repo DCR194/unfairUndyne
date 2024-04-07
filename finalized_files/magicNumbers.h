@@ -1,6 +1,9 @@
 #ifndef MAJIC_NUMBERS_C
 #define MAJIC_NUMBERS_C
 
+#include "stdlib.h"
+#include "stdio.h"
+#include "stdbool.h"
 
 #define SIZECUBES 5
 #define XWIDTH 320
@@ -14,6 +17,7 @@
 #define A_KEY 0x1C
 #define S_KEY 0x1B
 #define D_KEY 0x23
+#define SPACE_KEY 0x29
 
 struct Box {
     int xPos;

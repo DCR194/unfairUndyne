@@ -1,8 +1,7 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
-#include <stdio.h>
-#include <stdlib.h>
+
 #include "boxLogic.h"
 #include "userInput.h"
 
